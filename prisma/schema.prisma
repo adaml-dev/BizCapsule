@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  isApproved    Boolean  @default(false)
+  isAdmin       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  experiments   UserExperiment[]
+  invitations   Invitation[] @relation("InvitedBy")
+}
+
+model Experiment {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  filePath    String   // np. "experiments_raw/rfq-dashboard.html"
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  users       UserExperiment[]
+}
+
+model UserExperiment {
+  userId       String
+  experimentId String
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiment   Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, experimentId])
+}
+
+model Invitation {
+  id           String   @id @default(cuid())
+  email        String
+  token        String   @unique
+  expiresAt    DateTime
+  autoApprove  Boolean  @default(true)
+  maxUses      Int      @default(1)
+  usedCount    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  createdById  String?
+  createdBy    User?    @relation("InvitedBy", fields: [createdById], references: [id], onDelete: SetNull)
+}

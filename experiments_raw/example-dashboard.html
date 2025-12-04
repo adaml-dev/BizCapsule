@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example Dashboard - Vibe Lab</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 800px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 2.5rem;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .stat-card h3 {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .stat-card .value {
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      .content {
+        background: #f7f9fc;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .content h2 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .content p {
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 15px;
+      }
+
+      .button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .footer {
+        text-align: center;
+        color: #999;
+        margin-top: 30px;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 Example Dashboard</h1>
+      <p class="subtitle">
+        This is a sample HTML experiment served by Vibe Lab
+      </p>
+
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Active Users</h3>
+          <div class="value">1,234</div>
+        </div>
+        <div class="stat-card">
+          <h3>Experiments</h3>
+          <div class="value">42</div>
+        </div>
+        <div class="stat-card">
+          <h3>Success Rate</h3>
+          <div class="value">98%</div>
+        </div>
+      </div>
+
+      <div class="content">
+        <h2>Welcome to Vibe Lab!</h2>
+        <p>
+          This is an example HTML file stored in the
+          <code>experiments_raw/</code> folder. It demonstrates how standalone
+          HTML experiments can be served through the platform with access
+          control managed by the admin panel.
+        </p>
+        <p>
+          You can replace this file with any HTML content you want to serve -
+          interactive dashboards, data visualizations, prototypes, or any
+          web-based experiment you're working on.
+        </p>
+        <button
+          class="button"
+          onclick="alert('Button clicked! This experiment is fully interactive.')"
+        >
+          Try Me!
+        </button>
+      </div>
+
+      <div class="footer">
+        <p>Protected by Vibe Lab authentication system</p>
+      </div>
+    </div>
+
+    <script>
+      // You can add any JavaScript you need for your experiment
+      console.log("Experiment loaded successfully!");
+
+      // Example: Dynamic content update
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("Dashboard initialized at:", new Date().toLocaleString());
+      });
+    </script>
+  </body>
+</html>
