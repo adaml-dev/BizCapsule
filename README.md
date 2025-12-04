@@ -1,4 +1,4 @@
-# Vibe Lab
+# BizCapsule
 
 A Next.js application for managing and serving standalone HTML experiments with user authentication and access control.
 

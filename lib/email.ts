@@ -14,10 +14,10 @@ export async function sendInvitationEmail(
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "You've been invited to Vibe Lab",
+      subject: "You've been invited to BizCapsule",
       html: `
-        <h1>Welcome to Vibe Lab!</h1>
-        <p>You've been invited to join Vibe Lab. Click the link below to create your account:</p>
+        <h1>Welcome to BizCapsule!</h1>
+        <p>You've been invited to join BizCapsule. Click the link below to create your account:</p>
         <p><a href="${inviteUrl}">${inviteUrl}</a></p>
         <p>This invitation link will expire in 7 days.</p>
       `,
@@ -33,10 +33,10 @@ export async function sendApprovalNotificationEmail(to: string): Promise<void> {
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "Your Vibe Lab account has been approved",
+      subject: "Your BizCapsule account has been approved",
       html: `
         <h1>Account Approved!</h1>
-        <p>Your Vibe Lab account has been approved by an administrator.</p>
+        <p>Your BizCapsule account has been approved by an administrator.</p>
         <p>You can now log in at: <a href="${APP_URL}">${APP_URL}</a></p>
       `,
     });

@@ -20,175 +20,197 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Vibe Lab - Admin Panel
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">{user.email}</span>
-              <a
-                href="/hub"
-                className="text-sm text-indigo-600 hover:text-indigo-500"
+    <main className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="border-b border-slate-800/60 bg-slate-950/60 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto w-full px-6 py-4 flex items-center justify-between">
+          <h1 className="text-sm font-semibold text-slate-200">
+            BizCapsule{" "}
+            <span className="text-slate-500 font-normal">· Admin Panel</span>
+          </h1>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400">{user.email}</span>
+            <a
+              href="/hub"
+              className="text-xs px-3 py-1.5 rounded-full border border-slate-700 hover:bg-slate-800/70 text-slate-300 transition-colors"
+            >
+              View Hub
+            </a>
+            <form action={handleLogout}>
+              <button
+                type="submit"
+                className="text-xs px-3 py-1.5 rounded-full border border-slate-700 hover:bg-slate-800/70 text-slate-300 transition-colors"
               >
-                View Hub
-              </a>
-              <form action={handleLogout}>
-                <button
-                  type="submit"
-                  className="text-sm text-gray-700 hover:text-gray-900"
-                >
-                  Logout
-                </button>
-              </form>
-            </div>
+                Logout
+              </button>
+            </form>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            Admin Dashboard
-          </h2>
+      {/* Main Content */}
+      <section className="flex-1 max-w-6xl mx-auto w-full px-6 py-10 space-y-8">
+        {/* Cards grid for sections */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Manage Users card */}
+          <div className="bg-slate-900/70 border border-slate-800/60 rounded-2xl p-6 shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-50 flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-xs">
+                    👤
+                  </span>
+                  Manage Users
+                </h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  View all users, approve pending registrations, grant admin
+                  access, or delete users.
+                </p>
+              </div>
+            </div>
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Quick Actions
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Invite New User
-                  </h4>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Send an invitation email to a new user. The invitation will
-                    include a unique link that auto-approves their account.
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Use API: POST /api/admin/invite with email, maxUses, and
-                    expiresInDays
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Manage Users
-                  </h4>
-                  <p className="text-sm text-gray-500 mb-2">
-                    View all users, approve pending registrations, grant admin
-                    access, or delete users.
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Use API: GET /api/admin/users, PATCH /api/admin/users,
-                    DELETE /api/admin/users
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Manage Experiments
-                  </h4>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Create new experiments, update existing ones, or delete
-                    experiments. Configure which users have access.
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Use API: POST /api/admin/experiments, GET
-                    /api/admin/experiments, PATCH /api/admin/experiments, DELETE
-                    /api/admin/experiments
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Grant/Revoke Experiment Access
-                  </h4>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Control which users can access specific experiments.
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Use API: POST /api/admin/user-experiments, DELETE
-                    /api/admin/user-experiments
-                  </p>
-                </div>
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-emerald-500/20 px-2 py-[2px] text-[10px] font-semibold text-emerald-400">
+                  GET
+                </span>
+                <span>/api/admin/users</span>
+              </div>
+            </div>
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-amber-500/20 px-2 py-[2px] text-[10px] font-semibold text-amber-400">
+                  PATCH
+                </span>
+                <span>/api/admin/users</span>
+              </div>
+            </div>
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-red-500/20 px-2 py-[2px] text-[10px] font-semibold text-red-400">
+                  DELETE
+                </span>
+                <span>/api/admin/users</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">
-              📝 Note: Admin UI Coming Soon
-            </h3>
-            <p className="text-sm text-blue-700">
-              This is a functional admin panel skeleton. All backend APIs are
-              ready to use. You can integrate a full admin UI by making fetch
-              requests to the API endpoints listed above, or use tools like
-              Postman/curl for now.
+          {/* Invite Users card */}
+          <div className="bg-slate-900/70 border border-slate-800/60 rounded-2xl p-6 shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-50 flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-xs">
+                    ✉️
+                  </span>
+                  Invite Users
+                </h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  Send an invitation email to a new user. The invitation will
+                  include a unique link that auto-approves their account.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-blue-500/20 px-2 py-[2px] text-[10px] font-semibold text-blue-400">
+                  POST
+                </span>
+                <span>/api/admin/invite</span>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 italic">
+              Params: email, maxUses, expiresInDays
             </p>
           </div>
 
-          <div className="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Available API Endpoints
-              </h3>
-              <div className="space-y-3">
-                <div className="border-l-4 border-green-400 pl-4">
-                  <code className="text-sm font-mono text-gray-800">
-                    POST /api/admin/invite
-                  </code>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Send invitation to new user
-                  </p>
-                </div>
-                <div className="border-l-4 border-blue-400 pl-4">
-                  <code className="text-sm font-mono text-gray-800">
-                    GET /api/admin/users
-                  </code>
-                  <p className="text-xs text-gray-500 mt-1">
-                    List all users with their experiment access
-                  </p>
-                </div>
-                <div className="border-l-4 border-yellow-400 pl-4">
-                  <code className="text-sm font-mono text-gray-800">
-                    PATCH /api/admin/users
-                  </code>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Update user (approve, make admin)
-                  </p>
-                </div>
-                <div className="border-l-4 border-blue-400 pl-4">
-                  <code className="text-sm font-mono text-gray-800">
-                    GET /api/admin/experiments
-                  </code>
-                  <p className="text-xs text-gray-500 mt-1">
-                    List all experiments
-                  </p>
-                </div>
-                <div className="border-l-4 border-green-400 pl-4">
-                  <code className="text-sm font-mono text-gray-800">
-                    POST /api/admin/experiments
-                  </code>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Create new experiment
-                  </p>
-                </div>
-                <div className="border-l-4 border-green-400 pl-4">
-                  <code className="text-sm font-mono text-gray-800">
-                    POST /api/admin/user-experiments
-                  </code>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Grant user access to experiment
-                  </p>
-                </div>
+          {/* Experiments card */}
+          <div className="bg-slate-900/70 border border-slate-800/60 rounded-2xl p-6 shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-50 flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-xs">
+                    🧪
+                  </span>
+                  Experiments
+                </h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  Create new experiments, update existing ones, or delete
+                  experiments. Configure which users have access.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-emerald-500/20 px-2 py-[2px] text-[10px] font-semibold text-emerald-400">
+                  GET
+                </span>
+                <span>/api/admin/experiments</span>
+              </div>
+            </div>
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-blue-500/20 px-2 py-[2px] text-[10px] font-semibold text-blue-400">
+                  POST
+                </span>
+                <span>/api/admin/experiments</span>
+              </div>
+            </div>
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-amber-500/20 px-2 py-[2px] text-[10px] font-semibold text-amber-400">
+                  PATCH
+                </span>
+                <span>/api/admin/experiments</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Grant/Revoke Access card */}
+          <div className="bg-slate-900/70 border border-slate-800/60 rounded-2xl p-6 shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-50 flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-xs">
+                    🔑
+                  </span>
+                  Grant/Revoke Access
+                </h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  Control which users can access specific experiments.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-blue-500/20 px-2 py-[2px] text-[10px] font-semibold text-blue-400">
+                  POST
+                </span>
+                <span>/api/admin/user-experiments</span>
+              </div>
+            </div>
+            <div className="space-y-1 text-[11px] font-mono text-slate-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
+                <span className="rounded bg-red-500/20 px-2 py-[2px] text-[10px] font-semibold text-red-400">
+                  DELETE
+                </span>
+                <span>/api/admin/user-experiments</span>
               </div>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+
+        {/* Info Note */}
+        <div className="mt-4 rounded-2xl border border-dashed border-slate-700/80 bg-slate-950/60 px-4 py-3 text-xs text-slate-400">
+          <span className="font-semibold text-slate-200">Note:</span> This is a
+          functional admin panel skeleton. All backend APIs are ready to use.
+          You can integrate a full admin UI by making fetch requests to the API
+          endpoints listed above, or use tools like Postman/curl for now.
+        </div>
+      </section>
+    </main>
   );
 }
