@@ -17,20 +17,19 @@ export async function GET(req: NextRequest) {
         isApproved: true,
         isAdmin: true,
         createdAt: true,
-        experiments: {
-          include: {
-            experiment: {
-              select: {
-                slug: true,
-                title: true,
-              },
-            },
-          },
-        },
       },
     });
 
-    return NextResponse.json({ users });
+    // Return as array of users with createdAt as ISO string
+    const formattedUsers = users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      isApproved: user.isApproved,
+      isAdmin: user.isAdmin,
+      createdAt: user.createdAt.toISOString(),
+    }));
+
+    return NextResponse.json(formattedUsers);
   } catch (error) {
     if ((error as Error).message === "Admin access required") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -50,9 +49,8 @@ export async function GET(req: NextRequest) {
 
 // PATCH - Update user (approve, make admin, etc.)
 const updateUserSchema = z.object({
-  userId: z.string(),
-  isApproved: z.boolean().optional(),
-  isAdmin: z.boolean().optional(),
+  id: z.string(),
+  action: z.enum(["approve"]),
 });
 
 export async function PATCH(req: NextRequest) {
@@ -60,40 +58,45 @@ export async function PATCH(req: NextRequest) {
     await requireAdmin();
 
     const body = await req.json();
-    const { userId, isApproved, isAdmin } = updateUserSchema.parse(body);
+    const { id, action } = updateUserSchema.parse(body);
 
     const user = await db.user.findUnique({
-      where: { id: userId },
+      where: { id },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const updateData: { isApproved?: boolean; isAdmin?: boolean } = {};
-    if (isApproved !== undefined) updateData.isApproved = isApproved;
-    if (isAdmin !== undefined) updateData.isAdmin = isAdmin;
+    // Handle approve action
+    if (action === "approve") {
+      const updatedUser = await db.user.update({
+        where: { id },
+        data: { isApproved: true },
+        select: {
+          id: true,
+          email: true,
+          isApproved: true,
+          isAdmin: true,
+          createdAt: true,
+        },
+      });
 
-    const updatedUser = await db.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        isApproved: true,
-        isAdmin: true,
-      },
-    });
+      // Send approval notification if user was just approved
+      if (!user.isApproved) {
+        await sendApprovalNotificationEmail(user.email);
+      }
 
-    // Send approval notification if user was just approved
-    if (isApproved && !user.isApproved) {
-      await sendApprovalNotificationEmail(user.email);
+      return NextResponse.json({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        isApproved: updatedUser.isApproved,
+        isAdmin: updatedUser.isAdmin,
+        createdAt: updatedUser.createdAt.toISOString(),
+      });
     }
 
-    return NextResponse.json({
-      message: "User updated successfully",
-      user: updatedUser,
-    });
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
     if ((error as Error).message === "Admin access required") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -120,21 +123,32 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE - Delete user
 const deleteUserSchema = z.object({
-  userId: z.string(),
+  id: z.string(),
 });
 
 export async function DELETE(req: NextRequest) {
   try {
     await requireAdmin();
 
-    const body = await req.json();
-    const { userId } = deleteUserSchema.parse(body);
+    // Support both query param and JSON body
+    const { searchParams } = new URL(req.url);
+    const queryId = searchParams.get("id");
+
+    let userId: string;
+
+    if (queryId) {
+      userId = queryId;
+    } else {
+      const body = await req.json();
+      const { id } = deleteUserSchema.parse(body);
+      userId = id;
+    }
 
     await db.user.delete({
       where: { id: userId },
     });
 
-    return NextResponse.json({ message: "User deleted successfully" });
+    return NextResponse.json({ success: true });
   } catch (error) {
     if ((error as Error).message === "Admin access required") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

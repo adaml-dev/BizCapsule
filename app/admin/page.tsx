@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
+import UsersCard from "@/components/admin/UsersCard";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
@@ -50,50 +51,11 @@ export default async function AdminPage() {
 
       {/* Main Content */}
       <section className="flex-1 max-w-6xl mx-auto w-full px-6 py-10 space-y-8">
+        {/* Users Management Section - Full Width */}
+        <UsersCard />
+
         {/* Cards grid for sections */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Manage Users card */}
-          <div className="bg-slate-900/70 border border-slate-800/60 rounded-2xl p-6 shadow-lg space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-50 flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400 text-xs">
-                    👤
-                  </span>
-                  Manage Users
-                </h2>
-                <p className="mt-1 text-xs text-slate-400">
-                  View all users, approve pending registrations, grant admin
-                  access, or delete users.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-1 text-[11px] font-mono text-slate-400">
-              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
-                <span className="rounded bg-emerald-500/20 px-2 py-[2px] text-[10px] font-semibold text-emerald-400">
-                  GET
-                </span>
-                <span>/api/admin/users</span>
-              </div>
-            </div>
-            <div className="space-y-1 text-[11px] font-mono text-slate-400">
-              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
-                <span className="rounded bg-amber-500/20 px-2 py-[2px] text-[10px] font-semibold text-amber-400">
-                  PATCH
-                </span>
-                <span>/api/admin/users</span>
-              </div>
-            </div>
-            <div className="space-y-1 text-[11px] font-mono text-slate-400">
-              <div className="inline-flex items-center gap-2 rounded-full bg-slate-950/60 px-3 py-1">
-                <span className="rounded bg-red-500/20 px-2 py-[2px] text-[10px] font-semibold text-red-400">
-                  DELETE
-                </span>
-                <span>/api/admin/users</span>
-              </div>
-            </div>
-          </div>
 
           {/* Invite Users card */}
           <div className="bg-slate-900/70 border border-slate-800/60 rounded-2xl p-6 shadow-lg space-y-4">
@@ -203,13 +165,6 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {/* Info Note */}
-        <div className="mt-4 rounded-2xl border border-dashed border-slate-700/80 bg-slate-950/60 px-4 py-3 text-xs text-slate-400">
-          <span className="font-semibold text-slate-200">Note:</span> This is a
-          functional admin panel skeleton. All backend APIs are ready to use.
-          You can integrate a full admin UI by making fetch requests to the API
-          endpoints listed above, or use tools like Postman/curl for now.
-        </div>
       </section>
     </main>
   );
