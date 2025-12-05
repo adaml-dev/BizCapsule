@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { NextRequest } from "next/server";
+import path from "path";
+import { promises as fs } from "fs";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 
@@ -9,14 +9,16 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    // 1. Authentication check
     const user = await getCurrentUser();
     if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new Response("Unauthorized", { status: 401 });
     }
 
+    // 2. Get slug from params
     const { slug } = await params;
 
-    // Find experiment by slug
+    // 3. Find experiment by slug
     const experiment = await db.experiment.findUnique({
       where: { slug },
       include: {
@@ -27,35 +29,51 @@ export async function GET(
     });
 
     if (!experiment) {
-      return new NextResponse("Experiment not found", { status: 404 });
+      return new Response("Experiment not found", { status: 404 });
     }
 
-    // Check if user has access (admins have access to all, or check if public, or check user-experiment relation)
-    const hasAccess =
-      user.isAdmin || experiment.isPublic || experiment.users.length > 0;
+    // 4. Access control: admin OR user has UserExperiment entry
+    const hasAccess = user.isAdmin || experiment.users.length > 0;
 
     if (!hasAccess) {
-      return new NextResponse(
-        "Forbidden - You don't have access to this experiment",
-        {
-          status: 403,
-        }
-      );
+      return new Response("Forbidden", { status: 403 });
     }
 
-    // Read HTML file
-    const filePath = join(process.cwd(), experiment.filePath);
-    const htmlContent = await readFile(filePath, "utf-8");
+    // 5. Determine HTML file name
+    // If experiment has filePath field, extract just the filename
+    // Otherwise, default to slug + ".html"
+    let fileName: string;
+    if (experiment.filePath) {
+      // Extract filename from path like "experiments_raw/hello-vibe.html"
+      fileName = path.basename(experiment.filePath);
+    } else {
+      fileName = `${slug}.html`;
+    }
 
-    // Return HTML with proper content type
-    return new NextResponse(htmlContent, {
+    // 6. Build absolute path to HTML file
+    const filePath = path.join(process.cwd(), "experiments_raw", fileName);
+
+    // 7. Read the HTML file
+    let html: string;
+    try {
+      html = await fs.readFile(filePath, "utf8");
+    } catch (error: any) {
+      if (error.code === "ENOENT") {
+        console.error(`HTML file not found: ${filePath}`);
+        return new Response("Experiment HTML file not found", { status: 404 });
+      }
+      throw error; // Re-throw to outer catch for other file errors
+    }
+
+    // 8. Return HTML with proper headers
+    return new Response(html, {
+      status: 200,
       headers: {
         "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "no-store",
       },
     });
   } catch (error) {
-    console.error("Experiment serving error:", error);
-    return new NextResponse("Internal server error", { status: 500 });
+    console.error("Experiment failed to render:", error);
+    return new Response("Experiment failed to render", { status: 500 });
   }
 }
