@@ -57,3 +57,11 @@ model Invitation {
   createdById  String?
   createdBy    User?    @relation("InvitedBy", fields: [createdById], references: [id], onDelete: SetNull)
 }
+
+model HtmlCode {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

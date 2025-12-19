@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Plotly.js – Showcase</title>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<style>
+  body{margin:0;background:#0b0f14;color:#e6edf3;font:14px system-ui}
+  h1{margin:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;padding:14px}
+  .card{background:#0f1621;border:1px solid #223042;border-radius:12px;padding:10px}
+  .plot{height:360px}
+</style>
+</head>
+<body>
+
+<h1>Plotly.js – interaktywna galeria możliwości</h1>
+
+<div class="grid">
+  <div class="card"><b>1. Linie + rangeslider</b><div id="p1" class="plot"></div></div>
+  <div class="card"><b>2. Animacja (frames)</b><div id="p2" class="plot"></div></div>
+  <div class="card"><b>3. Scatter + lasso + event JS</b><div id="p3" class="plot"></div></div>
+  <div class="card"><b>4. Subploty (shared axis)</b><div id="p4" class="plot"></div></div>
+  <div class="card"><b>5. Heatmap</b><div id="p5" class="plot"></div></div>
+  <div class="card"><b>6. Histogram + KDE-like</b><div id="p6" class="plot"></div></div>
+  <div class="card"><b>7. Boxplot (outliery)</b><div id="p7" class="plot"></div></div>
+  <div class="card"><b>8. Polar chart</b><div id="p8" class="plot"></div></div>
+  <div class="card"><b>9. Sankey (przepływy)</b><div id="p9" class="plot"></div></div>
+  <div class="card"><b>10. Geo map</b><div id="p10" class="plot"></div></div>
+  <div class="card"><b>11. 3D scatter</b><div id="p11" class="plot"></div></div>
+  <div class="card"><b>12. Live update (setInterval)</b><div id="p12" class="plot"></div></div>
+</div>
+
+<script>
+const baseLayout={
+  paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+  font:{color:"#e6edf3"},xaxis:{gridcolor:"#223042"},yaxis:{gridcolor:"#223042"},
+  margin:{l:50,r:20,t:30,b:40}
+};
+
+/* 1. Linie + rangeslider */
+const t=[...Array(100)].map((_,i)=>i);
+Plotly.newPlot("p1",[
+  {x:t,y:t.map(i=>Math.sin(i/8)+i*0.02),mode:"lines",name:"A"},
+  {x:t,y:t.map(i=>Math.cos(i/10)+i*0.015),mode:"lines",name:"B"}
+],{...baseLayout,xaxis:{rangeslider:{visible:true}}});
+
+/* 2. Animacja */
+const frames=[];
+for(let k=0;k<20;k++){
+  frames.push({name:"f"+k,data:[{x:t,y:t.map(i=>Math.sin(i/10+k/2))}]});
+}
+Plotly.newPlot("p2",
+  [{x:t,y:t.map(i=>Math.sin(i/10)),mode:"lines"}],
+  {...baseLayout,updatemenus:[{
+    type:"buttons",buttons:[
+      {label:"Play",method:"animate",args:[null,{fromcurrent:true,frame:{duration:80}}]},
+      {label:"Pause",method:"animate",args:[[null],{mode:"immediate"}]}
+    ]
+  }]},
+  {frames}
+);
+
+/* 3. Scatter + lasso + event */
+const xs=[...Array(200)].map(()=>Math.random()*100);
+const ys=xs.map(v=>0.6*v+10+(Math.random()-0.5)*30);
+Plotly.newPlot("p3",[{
+  x:xs,y:ys,mode:"markers",
+  marker:{size:7,opacity:0.7}
+}],{...baseLayout,dragmode:"lasso"});
+document.getElementById("p3").on("plotly_selected",e=>{
+  console.log("Selected points:",e.points.length);
+});
+
+/* 4. Subploty */
+Plotly.newPlot("p4",[
+  {x:t,y:t.map(i=>Math.sin(i/6)),type:"scatter",xaxis:"x",yaxis:"y"},
+  {x:t,y:t.map(i=>Math.cos(i/6)),type:"scatter",xaxis:"x2",yaxis:"y2"}
+],{
+  ...baseLayout,
+  grid:{rows:2,columns:1,pattern:"independent"},
+  xaxis2:{gridcolor:"#223042"},yaxis2:{gridcolor:"#223042"}
+});
+
+/* 5. Heatmap */
+const z=[...Array(20)].map(()=>[...Array(20)].map(()=>Math.random()));
+Plotly.newPlot("p5",[{
+  z, type:"heatmap", colorscale:"Viridis"
+}],baseLayout);
+
+/* 6. Histogram */
+const h=[...Array(500)].map(()=>Math.random()*10);
+Plotly.newPlot("p6",[
+  {x:h,type:"histogram",nbinsx:30,name:"hist"}
+],baseLayout);
+
+/* 7. Boxplot */
+Plotly.newPlot("p7",[
+  {y:[...Array(50)].map(()=>Math.random()*10),type:"box",name:"A"},
+  {y:[...Array(50)].map(()=>Math.random()*20),type:"box",name:"B"}
+],baseLayout);
+
+/* 8. Polar */
+Plotly.newPlot("p8",[{
+  type:"scatterpolar",
+  r:[1,2,3,4,3,2],
+  theta:["A","B","C","D","E","F"],
+  fill:"toself"
+}],{...baseLayout,polar:{bgcolor:"rgba(0,0,0,0)"}});
+
+/* 9. Sankey */
+Plotly.newPlot("p9",[{
+  type:"sankey",
+  node:{label:["RFQ","Pre-study","NPD","Proto","Series"]},
+  link:{source:[0,1,2,3],target:[1,2,3,4],value:[100,60,40,25]}
+}],baseLayout);
+
+/* 10. Geo */
+Plotly.newPlot("p10",[{
+  type:"scattergeo",
+  lat:[52.23,48.85,52.52],
+  lon:[21.01,2.35,13.40],
+  text:["Warsaw","Paris","Berlin"],
+  mode:"markers",
+  marker:{size:10}
+}],{...baseLayout,geo:{bgcolor:"rgba(0,0,0,0)"}});
+
+/* 11. 3D scatter */
+Plotly.newPlot("p11",[{
+  type:"scatter3d",
+  x:[...Array(200)].map(()=>Math.random()),
+  y:[...Array(200)].map(()=>Math.random()),
+  z:[...Array(200)].map(()=>Math.random()),
+  mode:"markers",
+  marker:{size:3}
+}],{...baseLayout,scene:{}});
+
+/* 12. Live update */
+let lx=[0],ly=[Math.random()];
+Plotly.newPlot("p12",[{
+  x:lx,y:ly,mode:"lines+markers"
+}],baseLayout);
+setInterval(()=>{
+  lx.push(lx[lx.length-1]+1);
+  ly.push(Math.random());
+  Plotly.react("p12",[{
+    x:lx.slice(-50),y:ly.slice(-50),mode:"lines+markers"
+  }],baseLayout);
+},800);
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html><html lang="pl"><meta charset="utf-8">
+<title>Plotly.js demo (standalone)</title>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<style>
+  body{font:14px system-ui;margin:16px;background:#0b0f14;color:#e6edf3}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{border:1px solid #223042;border-radius:12px;padding:10px;background:#0f1621}
+  .p{height:320px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+<h2>Plotly.js – szybka prezentacja możliwości</h2>
+<p>Hover, zoom, pan, export PNG (kamera), legendy, animacje, 3D, mapy – wszystko w przeglądarce.</p>
+
+<div class="grid">
+  <div class="card"><b>1) Linie + suwak czasu + adnotacje</b><div id="p1" class="p"></div></div>
+  <div class="card"><b>2) Bar + sortowanie + tooltipy</b><div id="p2" class="p"></div></div>
+  <div class="card"><b>3) Scatter + selekcja (lasso/box) + trend</b><div id="p3" class="p"></div></div>
+  <div class="card"><b>4) 3D Surface + obrót</b><div id="p4" class="p"></div></div>
+</div>
+
+<script>
+const L={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+  font:{color:"#e6edf3"},xaxis:{gridcolor:"#223042"},yaxis:{gridcolor:"#223042"}};
+
+// 1) Linie + rangeslider
+const t=[...Array(60)].map((_,i)=>i);
+const y1=t.map(i=>20+6*Math.sin(i/6)+i*0.15), y2=t.map(i=>18+5*Math.cos(i/7)+i*0.12);
+Plotly.newPlot("p1",[
+  {x:t,y:y1,mode:"lines+markers",name:"Seria A"},
+  {x:t,y:y2,mode:"lines",name:"Seria B"}
+],{
+  ...L,margin:{l:50,r:20,t:30,b:40},
+  xaxis:{...L.xaxis,title:"czas (dni)",rangeslider:{visible:true}},
+  yaxis:{...L.yaxis,title:"wartość"},
+  annotations:[{x:40,y:y1[40],text:"peak-ish",showarrow:true,arrowhead:2}]
+},{displaylogo:false});
+
+// 2) Bar + sort
+const cats=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"];
+const vals=[42,18,35,51,27,46];
+function plotBar(sorted){
+  const idx=[...vals.keys()].sort((a,b)=>sorted?vals[b]-vals[a]:a-b);
+  Plotly.react("p2",[{
+    x:idx.map(i=>cats[i]),y:idx.map(i=>vals[i]),
+    type:"bar",text:idx.map(i=>vals[i]),textposition:"auto",hovertemplate:"%{x}: %{y}<extra></extra>"
+  }],{
+    ...L,margin:{l:50,r:20,t:30,b:50},
+    updatemenus:[{type:"buttons",x:0,y:1.18,buttons:[
+      {label:"Oryginalnie",method:"skip",args:[],execute:true},
+      {label:"Sortuj malejąco",method:"skip",args:[],execute:true}
+    ]}]
+  },{displaylogo:false});
+  const btn=document.querySelector("#p2 .updatemenu-container");
+  if(btn && !btn.dataset.wired){
+    btn.dataset.wired="1";
+    btn.addEventListener("click",e=>{
+      const lab=e.target?.textContent||"";
+      if(lab.includes("Sortuj")) plotBar(true);
+      if(lab.includes("Oryginal")) plotBar(false);
+    });
+  }
+}
+plotBar(false);
+
+// 3) Scatter + selekcja + linia trendu (prosta regresja)
+function linreg(x,y){
+  const n=x.length, sx=x.reduce((a,b)=>a+b,0), sy=y.reduce((a,b)=>a+b,0);
+  const sxx=x.reduce((a,v)=>a+v*v,0), sxy=x.reduce((a,v,i)=>a+v*y[i],0);
+  const m=(n*sxy-sx*sy)/(n*sxx-sx*sx), b=(sy-m*sx)/n;
+  return {m,b};
+}
+const x3=[...Array(180)].map(()=>Math.random()*100);
+const y3=x3.map(v=>0.75*v+10+(Math.random()-0.5)*25);
+const {m,b}=linreg(x3,y3);
+const xr=[0,100], yr=xr.map(v=>m*v+b);
+Plotly.newPlot("p3",[
+  {x:x3,y:y3,mode:"markers",type:"scatter",name:"punkty",
+   marker:{size:7,opacity:0.7},hovertemplate:"x=%{x:.1f}<br>y=%{y:.1f}<extra></extra>"},
+  {x:xr,y:yr,mode:"lines",name:"trend",hoverinfo:"skip"}
+],{
+  ...L,margin:{l:50,r:20,t:30,b:40},
+  dragmode:"lasso",xaxis:{...L.xaxis,title:"X"},yaxis:{...L.yaxis,title:"Y"},
+  title:{text:"Zaznacz punkty (lasso/box) i patrz w konsolę",font:{size:12}}
+},{displaylogo:false});
+document.getElementById("p3").on("plotly_selected",ev=>{
+  const n=ev?.points?.length||0; console.log("Selected points:",n, ev?.points?.slice(0,3));
+});
+
+// 4) 3D surface
+const xs=[...Array(40)].map((_,i)=>-3+6*i/39);
+const ys=[...Array(40)].map((_,i)=>-3+6*i/39);
+const z=ys.map(y=>xs.map(x=>Math.sin(x*x+y*y)/(x*x+y*y||1)));
+Plotly.newPlot("p4",[{
+  type:"surface",x:xs,y:ys,z:z,showscale:false
+}],{
+  ...L,margin:{l:0,r:0,t:30,b:0},
+  scene:{xaxis:{gridcolor:"#223042"},yaxis:{gridcolor:"#223042"},zaxis:{gridcolor:"#223042"}}
+},{displaylogo:false});
+</script>
+</html>

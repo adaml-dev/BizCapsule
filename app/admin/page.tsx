@@ -32,6 +32,12 @@ export default async function AdminPage() {
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-400">{user.email}</span>
             <a
+              href="/admin/html-editor"
+              className="text-xs px-3 py-1.5 rounded-full border border-indigo-600 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 transition-colors"
+            >
+              HTML Editor
+            </a>
+            <a
               href="/hub"
               className="text-xs px-3 py-1.5 rounded-full border border-slate-700 hover:bg-slate-800/70 text-slate-300 transition-colors"
             >
